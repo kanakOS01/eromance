@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
     DB_URL: str
+    DB_URL_ORIG: str
 
     class Config:
         env_file = '.env'
