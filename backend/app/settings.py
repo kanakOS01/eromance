@@ -9,6 +9,13 @@ class Settings(BaseSettings):
     DB_URL: str
     DB_URL_ORIG: str
 
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    SECRET_KEY: str
+    JWT_SECRET_KEY: str
+    REDIRECT_URL: str
+    FRONTEND_URL: str
+
     class Config:
         env_file = '.env'
 

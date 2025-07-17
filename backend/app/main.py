@@ -1,12 +1,16 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.routers import posts
 
 
-app = FastAPI()
+app = FastAPI(root_path='/api', default_response_class=ORJSONResponse)
+app.include_router(posts.router)
+
 
 ORIGINS = ["*"]
 app.add_middleware(
@@ -22,7 +26,7 @@ app.add_middleware(
 async def heatlh(db: AsyncSession = Depends(get_db)):
     response = {'app': 'working', 'db': None}
     try:
-        result = await db.execute(text("SELECT 'db working'"))
+        result = await db.execute(text("SELECT 'working'"))
         response['db'] = result.scalar()
     except Exception as e:
         response['db'] = str(e)
