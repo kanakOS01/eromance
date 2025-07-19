@@ -3,7 +3,7 @@ from app.models.base import Base
 
 
 class Post(Base):
-    __tablename__ = 'post'
+    __tablename__ = 'posts'
 
     id = Column(String, primary_key=True)
     title = Column(String, nullable=False)

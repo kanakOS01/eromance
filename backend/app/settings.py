@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
     REDIRECT_URL: str
     FRONTEND_URL: str
+    ALGORITHM: str = 'HS256'
 
     class Config:
         env_file = '.env'
