@@ -16,6 +16,7 @@ class User(Base):
     updated_at = Column(Integer, nullable=False)
 
     sessions = relationship("Session", back_populates="user")
+    posts = relationship("Post", back_populates="user")
 
     def __repr__(self):
         return f'<User(id={self.id}, email={self.email}, name={self.name})>'

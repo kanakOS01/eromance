@@ -109,7 +109,7 @@ async def get_me(request: Request):
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         google_id = payload.get('sub')
         email = payload.get('email')
-        expires_at = dt.fromtimestamp(payload.get('exp', '0'))
+        expires_at = dt.fromtimestamp(payload.get('exp', 0), tz=datetime.timezone.utc)
 
         if expires_at < dt.now(datetime.timezone.utc):
             raise HTTPException(status_code=401, detail='Expired token')
