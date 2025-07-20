@@ -6,13 +6,14 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.routers import posts, auth
+from app.routers import posts, auth, comments
 from app.settings import settings
 
 
 app = FastAPI(root_path='/api', default_response_class=ORJSONResponse)
 app.include_router(posts.router)
 app.include_router(auth.router)
+app.include_router(comments.router)
 
 
 ORIGINS = ['*']

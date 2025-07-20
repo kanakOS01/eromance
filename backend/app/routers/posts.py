@@ -45,7 +45,7 @@ async def create_post(
         db.add(new_post)
         await db.commit()
         await db.refresh(new_post)
-        return { 'id': new_post.id }
+        return new_post
     except Exception as e:
         await db.rollback()
         raise HTTPException(
