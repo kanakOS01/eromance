@@ -19,6 +19,7 @@ class Post(Base):
     deleted_at = Column(Integer, nullable=True)
 
     user = relationship("User", back_populates="posts")
+    comments = relationship("Comment", back_populates="post")
 
     def __repr__(self):
         return f'<Post(id={self.id}, title={self.title}, slug={self.slug})>'

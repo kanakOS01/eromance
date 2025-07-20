@@ -17,6 +17,7 @@ class User(Base):
 
     sessions = relationship("Session", back_populates="user")
     posts = relationship("Post", back_populates="user")
+    comments = relationship("Comment", back_populates="user")
 
     def __repr__(self):
         return f'<User(id={self.id}, email={self.email}, name={self.name})>'

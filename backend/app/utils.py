@@ -11,8 +11,10 @@ from jose import jwt, ExpiredSignatureError, JWTError
 from fastapi import HTTPException, Cookie
 from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlalchemy import text
+from fastapi import Depends
 
 from app.settings import settings
+from app.database import get_db
 
 
 async def generate_unique_slug(title: str, existing_slugs: set[str]) -> str:
@@ -30,19 +32,6 @@ async def create_access_token(data: dict, expires_delta: timedelta = None) -> st
     expire = dt.now(datetime.timezone.utc) + (expires_delta or timedelta(minutes=600))
     to_encode.update({'exp': expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-
-
-async def get_current_user(token: str = Cookie(None)):
-    if not token:
-        raise HTTPException(status_code=401, detail='Not authenticated')
-
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        return {'user_id': payload.get('sub'), 'email': payload.get('email')}
-    except ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail='Token expired')
-    except JWTError:
-        raise HTTPException(status_code=401, detail='Invalid token')
 
 
 async def log_user(
@@ -127,7 +116,7 @@ async def log_token(
         raise HTTPException(status_code=500, detail='Internal server error logging token')
     
 
-def get_current_user(token: str = Cookie(None)):
+async def get_current_user(token: str = Cookie(None, alias='access_token'), db: AsyncConnection = Depends(get_db)):
     if not token:
         raise HTTPException(status_code=401, detail='Not authenticated')
 
@@ -142,7 +131,15 @@ def get_current_user(token: str = Cookie(None)):
         email: str = payload.get('email')
         if google_id is None or email is None:
             raise credentials_exception
-        return {'google_id': google_id, 'email': email}
+        
+        query = text('SELECT id FROM users WHERE google_id = :google_id AND email = :email LIMIT 1')
+        result = await db.execute(query, {"google_id": google_id, 'email': email})
+        user_data = result.mappings().first()
+
+        if not user_data:
+            raise HTTPException(status_code=404, detail='User not found')
+
+        return {'google_id': google_id, 'email': email, 'user_id': user_data.id}
 
     except ExpiredSignatureError:
         traceback.print_exc()
