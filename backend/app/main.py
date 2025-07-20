@@ -37,3 +37,9 @@ async def heatlh(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         response['db'] = str(e)
     return response
+
+
+if __name__ == '__main__':
+    import uvicorn
+    import os
+    uvicorn.run("app.main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
